@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Mulish-Black.ttf</string>
+		<string>Mulish-BlackItalic.ttf</string>
+		<string>Merriweather-UltraBdIt.ttf</string>
+		<string>Mulish-Bold.ttf</string>
+		<string>Mulish-BoldItalic.ttf</string>
+		<string>Mulish-ExtraBold.ttf</string>
+		<string>Mulish-ExtraLightItalic.ttf</string>
+		<string>Mulish-Italic.ttf</string>
+		<string>Mulish-Light.ttf</string>
+		<string>Mulish-LightItalic.ttf</string>
+		<string>Mulish-Medium.ttf</string>
+		<string>Mulish-MediumItalic.ttf</string>
+		<string>Mulish-Regular.ttf</string>
+		<string>Mulish-SemiBold.ttf</string>
+		<string>Mulish-SemiBoldItalic.ttf</string>
+		<string>Merriweather Light.ttf</string>
+		<string>Merriweather UltraBold.ttf</string>
+		<string>Merriweather-Bold.ttf</string>
+		<string>Merriweather-BoldIt.ttf</string>
+		<string>Merriweather-Italic.ttf</string>
+		<string>Merriweather-LightIt.ttf</string>
+		<string>Merriweather-Regular.ttf</string>
+	</array>
+</dict>
+</plist>

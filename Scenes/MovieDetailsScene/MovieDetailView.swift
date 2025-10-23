@@ -49,14 +49,14 @@ struct CastMemberView: View {
     var body: some View {
         VStack(spacing: 8) {
             AsyncRemoteImage(url: person.imageURL)
-                .frame(width: 80, height: 80)
+                .frame(width: 72, height: 72)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             Text(person.name)
                 .font(.caption)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
         }
-        .frame(width: 80)
+        .frame(width: 72)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text(person.name))
     }
@@ -116,7 +116,6 @@ struct MovieDetailView: View {
                         Spacer()
 
                     }
-                    .padding(20)
                     .background(Color(.systemBackground))
                     .cornerRadius(25, corners: [.topLeft, .topRight])
                     .shadow(radius: 5)
@@ -206,8 +205,7 @@ struct MovieDetailView: View {
             descriptionSection
             castSection
         }
-        .padding(.horizontal)
-        .padding(.top, 20)
+        .padding(.all, 24)
         .accessibilityElement(children: .contain)
     }
 
@@ -249,7 +247,7 @@ struct MovieDetailView: View {
     private var infoSection: some View {
         HStack(spacing: 40) {
             DetailItem(title: "Length",   value: formattedDuration(minutes: viewModel.detail?.base.duration))
-            DetailItem(title: "Language", value: viewModel.detail?.title ?? "N/A")
+            DetailItem(title: "Language", value: viewModel.detail?.country ?? "N/A")
             DetailItem(
                 title: "Rating",
                 value: {

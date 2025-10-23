@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2803BBDF2EAAA523008ECBC8 /* Merriweather-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBDB2EAAA523008ECBC8 /* Merriweather-Regular.ttf */; };
+		2803BBE02EAAA523008ECBC8 /* Merriweather UltraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD62EAAA523008ECBC8 /* Merriweather UltraBold.ttf */; };
+		2803BBE12EAAA523008ECBC8 /* Merriweather-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD72EAAA523008ECBC8 /* Merriweather-Bold.ttf */; };
+		2803BBE22EAAA523008ECBC8 /* Merriweather Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD52EAAA523008ECBC8 /* Merriweather Light.ttf */; };
+		2803BBE32EAAA523008ECBC8 /* Merriweather-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD92EAAA523008ECBC8 /* Merriweather-Italic.ttf */; };
+		2803BBE42EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBDC2EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf */; };
+		2803BBE62EAAA523008ECBC8 /* Merriweather-BoldIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD82EAAA523008ECBC8 /* Merriweather-BoldIt.ttf */; };
+		2803BBE72EAAA523008ECBC8 /* Merriweather-LightIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBDA2EAAA523008ECBC8 /* Merriweather-LightIt.ttf */; };
 		28A9C89C2EA3A97800BC8492 /* AppEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C89B2EA3A97800BC8492 /* AppEntry.swift */; };
 		28A9C89E2EA3A97800BC8492 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C89D2EA3A97800BC8492 /* HomeView.swift */; };
 		28A9C8C12EA3AF7800BC8492 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C8C02EA3AF7500BC8492 /* Fonts.swift */; };
@@ -49,6 +57,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2803BBD52EAAA523008ECBC8 /* Merriweather Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather Light.ttf"; sourceTree = "<group>"; };
+		2803BBD62EAAA523008ECBC8 /* Merriweather UltraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather UltraBold.ttf"; sourceTree = "<group>"; };
+		2803BBD72EAAA523008ECBC8 /* Merriweather-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-Bold.ttf"; sourceTree = "<group>"; };
+		2803BBD82EAAA523008ECBC8 /* Merriweather-BoldIt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-BoldIt.ttf"; sourceTree = "<group>"; };
+		2803BBD92EAAA523008ECBC8 /* Merriweather-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-Italic.ttf"; sourceTree = "<group>"; };
+		2803BBDA2EAAA523008ECBC8 /* Merriweather-LightIt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-LightIt.ttf"; sourceTree = "<group>"; };
+		2803BBDB2EAAA523008ECBC8 /* Merriweather-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-Regular.ttf"; sourceTree = "<group>"; };
+		2803BBDC2EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-UltraBdIt.ttf"; sourceTree = "<group>"; };
+		2803BBE92EAAA5E5008ECBC8 /* Movie-Browser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Movie-Browser-Info.plist"; sourceTree = "<group>"; };
 		28A9C8982EA3A97800BC8492 /* Movie Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A9C89B2EA3A97800BC8492 /* AppEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntry.swift; sourceTree = "<group>"; };
 		28A9C89D2EA3A97800BC8492 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -102,9 +119,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2803BBDE2EAAA523008ECBC8 /* merriweather */ = {
+			isa = PBXGroup;
+			children = (
+				2803BBD52EAAA523008ECBC8 /* Merriweather Light.ttf */,
+				2803BBD62EAAA523008ECBC8 /* Merriweather UltraBold.ttf */,
+				2803BBD72EAAA523008ECBC8 /* Merriweather-Bold.ttf */,
+				2803BBD82EAAA523008ECBC8 /* Merriweather-BoldIt.ttf */,
+				2803BBD92EAAA523008ECBC8 /* Merriweather-Italic.ttf */,
+				2803BBDA2EAAA523008ECBC8 /* Merriweather-LightIt.ttf */,
+				2803BBDB2EAAA523008ECBC8 /* Merriweather-Regular.ttf */,
+				2803BBDC2EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf */,
+			);
+			path = merriweather;
+			sourceTree = "<group>";
+		};
 		28A9C88F2EA3A97800BC8492 = {
 			isa = PBXGroup;
 			children = (
+				2803BBE92EAAA5E5008ECBC8 /* Movie-Browser-Info.plist */,
 				28EFEF232EA94AEC00A2D0A4 /* Assets.xcassets */,
 				28A9C8BC2EA3AF4C00BC8492 /* Resources */,
 				28A9C8A92EA3AD1800BC8492 /* Scenes */,
@@ -211,6 +244,7 @@
 		28A9C8BC2EA3AF4C00BC8492 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2803BBDE2EAAA523008ECBC8 /* merriweather */,
 				28EFEF252EA954CF00A2D0A4 /* Mulish-Black.ttf */,
 				28EFEF262EA954CF00A2D0A4 /* Mulish-BlackItalic.ttf */,
 				28EFEF272EA954CF00A2D0A4 /* Mulish-Bold.ttf */,
@@ -330,6 +364,14 @@
 				28EFEF3A2EA954CF00A2D0A4 /* Mulish-Italic.ttf in Resources */,
 				28EFEF3B2EA954CF00A2D0A4 /* Mulish-LightItalic.ttf in Resources */,
 				28EFEF3C2EA954CF00A2D0A4 /* Mulish-Regular.ttf in Resources */,
+				2803BBDF2EAAA523008ECBC8 /* Merriweather-Regular.ttf in Resources */,
+				2803BBE02EAAA523008ECBC8 /* Merriweather UltraBold.ttf in Resources */,
+				2803BBE12EAAA523008ECBC8 /* Merriweather-Bold.ttf in Resources */,
+				2803BBE22EAAA523008ECBC8 /* Merriweather Light.ttf in Resources */,
+				2803BBE32EAAA523008ECBC8 /* Merriweather-Italic.ttf in Resources */,
+				2803BBE42EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf in Resources */,
+				2803BBE62EAAA523008ECBC8 /* Merriweather-BoldIt.ttf in Resources */,
+				2803BBE72EAAA523008ECBC8 /* Merriweather-LightIt.ttf in Resources */,
 				28EFEF3D2EA954CF00A2D0A4 /* Mulish-SemiBold.ttf in Resources */,
 				28EFEF3E2EA954CF00A2D0A4 /* Mulish-SemiBoldItalic.ttf in Resources */,
 				28EFEF3F2EA954CF00A2D0A4 /* Mulish-Light.ttf in Resources */,
@@ -506,7 +548,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = "Movie-Browser-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -538,7 +580,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = "Movie-Browser-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
