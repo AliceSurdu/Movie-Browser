@@ -96,6 +96,8 @@ private enum MovieMapper {
                  synopsis: m.description ?? "",
                  country: m.countryOfOrigin,
                  status: m.status,
+                 title: title(m.title),
+                 averageScore: m.averageScore.map { Double($0)/10.0 },
                  cast: cast)
   }
 }

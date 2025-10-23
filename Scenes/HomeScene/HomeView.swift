@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HomeView: View {
-  @StateObject private var viewModel: HomeViewModel
+  @StateObject var viewModel: HomeViewModel
   init(viewModel: HomeViewModel) {
     _viewModel = StateObject(wrappedValue: viewModel)
   }
@@ -57,10 +57,10 @@ struct HomeView: View {
   private var contentState: some View {
     ScrollView {
       VStack(spacing: 24) {
-        topBar
 
         // Now Showing
           VStack(spacing: 16) {
+              topBar
               SectionHeader("Now Showing")
               ScrollView(.horizontal, showsIndicators: false) {
                   HStack(spacing: 16) {
@@ -82,7 +82,7 @@ struct HomeView: View {
         }
         .padding(.bottom, 80)
       }
-      .padding(.horizontal, 24) // 👈 singurul padding orizontal global
+      .padding(.leading, 24) // 👈 singurul padding orizontal global
     }
   }
 
@@ -146,23 +146,25 @@ struct HomeView: View {
   }
 
   private func posterCard(_ m: Movie) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      AsyncImage(url: m.posterURL) { img in
-        img.resizable().scaledToFill()
-      } placeholder: {
-        Rectangle().fill(Color("Brand").opacity(0.15))
+      VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: 12) {
+          AsyncImage(url: m.posterURL) { img in
+              img.resizable().scaledToFill()
+          } placeholder: {
+              Rectangle().fill(Color("Brand").opacity(0.15))
+          }
+          .frame(width: 180, height: 260)
+          .clipShape(RoundedRectangle(cornerRadius: 14))
+          .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+          
+          Text(m.title)
+              .font(Fonts.h2)
+              .foregroundColor(Color("TextPrimary"))
+              .lineLimit(2)
+              .multilineTextAlignment(.leading)
       }
-      .frame(width: 180, height: 260)
-      .clipShape(RoundedRectangle(cornerRadius: 14))
-      .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-
-      Text(m.title)
-        .font(Fonts.h2)
-        .foregroundColor(Color("TextPrimary"))
-        .lineLimit(2)
-        .multilineTextAlignment(.leading)
-
-      HStack(spacing: 6) {
+      
+      HStack() {
         Image(systemName: "star.fill")
           .foregroundStyle(.yellow)
           .font(.system(size: 12))
@@ -171,7 +173,6 @@ struct HomeView: View {
           .foregroundColor(Color("TextPrimary"))
       }
     }
-    .frame(width: 180, alignment: .leading)
   }
 
   private func popularRow(_ m: Movie) -> some View {
@@ -189,7 +190,7 @@ struct HomeView: View {
           .foregroundColor(Color("TextPrimary"))
           .lineLimit(2)
 
-        HStack(spacing: 6) {
+          HStack(alignment: .center) {
           Image(systemName: "star.fill")
             .foregroundStyle(.yellow)
             .font(.system(size: 12))
@@ -205,7 +206,7 @@ struct HomeView: View {
           .scrollClipDisabled() // 🟢 evită „tăierea” ultimului chip
         }
 
-        HStack(spacing: 6) {
+        HStack() {
           Image(systemName: "clock")
             .font(.system(size: 12))
             .foregroundStyle(Color("TextPrimary"))
@@ -214,8 +215,6 @@ struct HomeView: View {
             .foregroundColor(Color("TextPrimary"))
         }
       }
-
-      Spacer()
     }
   }
 

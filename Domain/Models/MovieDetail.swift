@@ -7,9 +7,11 @@
 
 import Foundation
 struct MovieDetail: Hashable {
-  let base: Movie
-  let synopsis: String
-  let country: String?
-  let status: String?
-  let cast: [Person]
+    let base: Movie
+    let synopsis: String
+    let country: String?
+    let status: String?
+    let title : String?
+    let averageScore: Double?
+    let cast: [Person]
 }
