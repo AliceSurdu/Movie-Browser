@@ -1,232 +1,231 @@
 import SwiftUI
 
-struct HomeView: View {
-    @StateObject var viewModel: HomeViewModel
-    init(viewModel: HomeViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+// MARK: - Componente Auxiliare
+
+/// 1. Tag pentru Gen (reutilizat din MovieDetailView)
+struct HomeGenreTag: View {
+    let text: String
+    
+    var body: some View {
+        Text(text.uppercased())
+            .font(.system(size: 10, weight: .medium))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(Color(.systemGray5)) // Fundal gri deschis
+            .foregroundColor(.secondary)
+            .cornerRadius(6)
+    }
+}
+
+/// 2. Card pentru secțiunea "Now Showing" (Orizontal)
+struct NowShowingCard: View {
+    let movie: Movie
+    // Closure pentru a gestiona acțiunea de navigare
+    var onTap: () -> Void
+    
+    // Înălțimea și lățimea fixă pentru card
+    private let cardWidth: CGFloat = 140
+    private let cardHeight: CGFloat = 212 // NOU: Înălțime fixă solicitată
+    private let cardRadius: CGFloat = 5 // NOU: Radius fix solicitat
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Poster (AsyncImage)
+                AsyncImage(url: movie.posterURL) { result in
+                    if let result = result.image {
+                        result
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Color.gray.opacity(0.2)
+                        // Asigurăm că placeholder-ul are aceleași dimensiuni
+                            .frame(width: cardWidth, height: cardHeight)
+                    }
+                }
+            .frame(width: cardWidth, height: cardHeight)    // 👈 fixed size
+            .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
+            .clipped()
+            .shadow(color: .black.opacity(0.08), radius: 6, y: 4) // Foarte important: taie imaginea la colțuri și dimensiune
+            
+            // Titlu
+            Text(movie.title)
+                .font(.headline)
+                .lineLimit(2)
+                .truncationMode(.tail)
+            
+            // Rating IMDb
+            if let score = movie.score {
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.yellow)
+                        .font(.caption)
+                    Text("\(score, specifier: "%.1f")/10 IMDb")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        // Setăm lățimea fixă a întregului card
+        .frame(width: cardWidth)
+        .onTapGesture(perform: onTap)
+    }
+}
+
+/// 3. Card pentru secțiunea "Popular" (Vertical)
+struct PopularCard: View {
+    let movie: Movie
+    // Closure pentru a gestiona acțiunea de navigare
+    var onTap: () -> Void
+    
+    private func formattedDuration(minutes: Int?) -> String {
+        guard let minutes = minutes, minutes > 0 else { return "N/A" }
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+        return "\(hours)h \(remainingMinutes)min"
     }
     
     var body: some View {
-        ZStack {
-            Color("Background").ignoresSafeArea()
+        HStack(alignment: .top, spacing: 15) {
+            // Poster
+            AsyncImage(url: movie.posterURL) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } else {
+                    Color.gray.opacity(0.2)
+                }
+            }
+            .frame(width: 80, height: 120) // Dimensiuni mici, orientare portret
+            .cornerRadius(8)
+            .clipped()
             
-            if viewModel.isLoading {
-                loadingState
-            } else if !viewModel.nowShowing.isEmpty || !viewModel.popular.isEmpty {
-                contentState
-            } else {
-                emptyState
-            }
-        }
-        .onAppear {
-            if viewModel.nowShowing.isEmpty { viewModel.load() }
-        }
-    }
-    
-    // MARK: - States
-    
-    private var loadingState: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                topBar
+            VStack(alignment: .leading, spacing: 5) {
+                // Titlu
+                Text(movie.title)
+                    .font(.headline)
+                    .lineLimit(2)
                 
-                Text("Now Showing")
-                    .font(Fonts.h1)
-                    .foregroundColor(Color("Brand"))
-                
-                HStack(spacing: 16) {
-                    skeletonCard
-                    skeletonCard
+                // Rating IMDb
+                if let score = movie.score {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.subheadline)
+                        Text("\(score, specifier: "%.1f")/10 IMDb")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
-                Text("Popular")
-                    .font(Fonts.h1)
-                    .foregroundColor(Color("Brand"))
-                
-                VStack(spacing: 16) {
-                    skeletonRow
-                    skeletonRow
+                // Genuri
+                HStack {
+                    ForEach(movie.genres.prefix(3), id: \.self) { genre in
+                        HomeGenreTag(text: genre)
+                    }
                 }
-                .padding(.bottom, 80)
-            }
-            .padding(.top, 16)
-            .padding(.horizontal, 24)
-        }
-    }
-    
-    private var contentState: some View {
-        ScrollView {
-            VStack(spacing: 24) {
                 
-                // Now Showing
-                VStack(spacing: 16) {
-                    topBar
+                // Durată
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(formattedDuration(minutes: movie.duration))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding(.vertical, 5)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onTapGesture(perform: onTap) // Acțiunea de navigare la tap
+    }
+}
+
+
+// MARK: - View Principală
+
+struct HomeView: View {
+    @StateObject var viewModel: HomeViewModel
+    // Variabilă de mediu pentru a obține referința la stiva de navigare
+    @Binding var path: [Movie]
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 30) {
+                
+                // 1. Navbar/Titlu (Imită structura din design)
+                HStack {
+                    Image(systemName: "line.horizontal.3")
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                    
+                    Text("FilmKu")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "bell.fill")
+                        .foregroundColor(.primary)
+                }
+                .padding(.horizontal)
+                
+                // 2. Secțiunea "Now Showing"
+                VStack(alignment: .leading, spacing: 15) {
                     SectionHeader("Now Showing")
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(viewModel.nowShowing) { m in
-                                NavigationLink(value: m) { posterCard(m) }
-                                    .buttonStyle(.plain)
+                        .padding(.horizontal)
+                    
+                    if viewModel.isLoading && viewModel.nowShowing.isEmpty {
+                        ProgressView().padding(.horizontal)
+                    } else if !viewModel.nowShowing.isEmpty {
+                        // Listă Orizontală de filme
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 15) {
+                                ForEach(viewModel.nowShowing, id: \.id) { movie in
+                                    NowShowingCard(movie: movie) {
+                                        // Navigare: adaugă obiectul Movie în path (stiva)
+                                        // Aceasta va declanșa .navigationDestination din AppRouter
+                                        path.append(movie)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                    } else if let error = viewModel.error {
+                        Text("Eroare la încărcare: \(error)").padding(.horizontal)
+                    }
+                }
+                
+                // 3. Secțiunea "Popular"
+                VStack(alignment: .leading, spacing: 15) {
+                    SectionHeader("Popular")
+                        .padding(.horizontal)
+                    
+                    if viewModel.isLoading && viewModel.popular.isEmpty {
+                        ProgressView().padding(.horizontal)
+                    } else if !viewModel.popular.isEmpty {
+                        // Listă Verticală de filme
+                        VStack(spacing: 15) {
+                            ForEach(viewModel.popular, id: \.id) { movie in
+                                PopularCard(movie: movie) {
+                                    // Navigare: adaugă obiectul Movie în path
+                                    path.append(movie)
+                                }
                             }
                         }
+                        .padding(.horizontal)
                     }
                 }
-                
-                // Popular
-                VStack(spacing: 16) {
-                    SectionHeader("Popular")
-                    ForEach(viewModel.popular) { m in
-                        NavigationLink(value: m) { popularRow(m) }
-                            .buttonStyle(.plain)
-                    }
-                }
-                .padding(.bottom, 80)
             }
-            .padding(.leading, 24) // 👈 singurul padding orizontal global
+            .padding(.top, 10)
+            .padding(.bottom, 80) // Spațiu pentru Tab Bar
         }
-    }
-    
-    private var emptyState: some View {
-        VStack(spacing: 32) {
-            topBar
-            Spacer()
-            Text("No movies available")
-                .font(Fonts.h2)
-                .foregroundColor(Color("TextPrimary"))
-            Spacer()
+        .onAppear {
+            viewModel.load() // Inițializează încărcarea datelor
         }
-        .padding(.horizontal, 24)
-    }
-    
-    // MARK: - Components
-    
-    private var topBar: some View {
-        HStack {
-            Image(systemName: "line.3.horizontal")
-            
-            Spacer()
-            
-            Text("FilmKu")
-                .font(Fonts.h1)
-                .foregroundColor(Color("Brand"))
-            
-            Spacer()
-            
-            ZStack(alignment: .topTrailing) {
-                Image(systemName: "bell")
-                Circle()
-                    .fill(.red)
-                    .frame(width: 8, height: 8)
-                    .offset(x: 4, y: -4)
-            }
-        }
-    }
-    
-    private var skeletonCard: some View {
-        RoundedRectangle(cornerRadius: 14)
-            .fill(.gray.opacity(0.15))
-            .frame(width: 180, height: 260)
-            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-    }
-    
-    private var skeletonRow: some View {
-        HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.gray.opacity(0.15))
-                .frame(width: 84, height: 120)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                RoundedRectangle(cornerRadius: 4).fill(.gray.opacity(0.15)).frame(width: 220, height: 16)
-                RoundedRectangle(cornerRadius: 4).fill(.gray.opacity(0.15)).frame(width: 180, height: 14)
-                RoundedRectangle(cornerRadius: 4).fill(.gray.opacity(0.15)).frame(width: 120, height: 14)
-            }
-            
-            Spacer()
-        }
-    }
-    
-    private func posterCard(_ m: Movie) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            VStack(alignment: .leading, spacing: 12) {
-                AsyncImage(url: m.posterURL) { img in
-                    img.resizable().scaledToFill()
-                } placeholder: {
-                    Rectangle().fill(Color("Brand").opacity(0.15))
-                }
-                .frame(width: 180, height: 260)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
-                
-                Text(m.title)
-                    .font(Fonts.h2)
-                    .foregroundColor(Color("TextPrimary"))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-            }
-            
-            HStack() {
-                Image(systemName: "star.fill")
-                    .foregroundStyle(.yellow)
-                    .font(.system(size: 12))
-                Text(scoreText(m))
-                    .font(Fonts.sub)
-                    .foregroundColor(Color("TextPrimary"))
-            }
-        }
-    }
-    
-    private func popularRow(_ m: Movie) -> some View {
-        HStack(spacing: 16) {
-            AsyncImage(url: m.posterURL) { $0.resizable().scaledToFill() } placeholder: {
-                Rectangle().fill(Color("Brand").opacity(0.15))
-            }
-            .frame(width: 84, height: 120)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text(m.title)
-                    .font(Fonts.h2)
-                    .foregroundColor(Color("TextPrimary"))
-                    .lineLimit(2)
-                
-                HStack(alignment: .center) {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
-                        .font(.system(size: 12))
-                    Text(scoreText(m) + " IMDb")
-                        .font(Fonts.sub)
-                        .foregroundColor(Color("TextPrimary"))
-                }
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(m.genres.prefix(3), id: \.self) { Chip(text: $0) }
-                    }
-                    .scrollClipDisabled() // 🟢 evită „tăierea” ultimului chip
-                }
-                
-                HStack() {
-                    Image(systemName: "clock")
-                        .font(.system(size: 12))
-                        .foregroundStyle(Color("TextPrimary"))
-                    Text(durationText(m.duration))
-                        .font(Fonts.sub)
-                        .foregroundColor(Color("TextPrimary"))
-                }
-            }
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func scoreText(_ m: Movie) -> String {
-        guard let s = m.score else { return "–/10" }
-        return String(format: "%.1f/10", s)
-    }
-    
-    private func durationText(_ d: Int?) -> String {
-        guard let d else { return "—" }
-        return "\(d / 60)h \(d % 60)m"
+        .background(Color(.systemBackground))
+        .navigationBarHidden(true) // Ascundem NavigationBar implicit
     }
 }
