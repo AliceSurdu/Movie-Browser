@@ -20,26 +20,14 @@ struct RoundedCorner: Shape {
 }
 
 // MARK: - Small UI atoms (kept look)
-struct GenreTag: View {
-    let text: String
-    var body: some View {
-        Text(text.uppercased())
-            .font(.caption).fontWeight(.medium)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(Color(.systemBlue).opacity(0.1))
-            .foregroundColor(.blue)
-            .cornerRadius(8)
-    }
-}
 
 struct DetailItem: View {
     let title: String
     let value: String
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.subheadline).foregroundColor(.secondary)
-            Text(value).font(.subheadline).fontWeight(.medium)
+            Text(title).font(.custom("Mulish-Regular", size: 12)).foregroundStyle(Color(.textSecondary))
+            Text(value).font(.custom("Mulish-SemiBold", size: 12)).foregroundStyle(Color(.black))
         }
     }
 }
@@ -47,18 +35,15 @@ struct DetailItem: View {
 struct CastMemberView: View {
     let person: Person
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             AsyncRemoteImage(url: person.imageURL)
                 .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
             Text(person.name)
-                .font(.caption)
-                .lineLimit(2)
+                .font(.custom("Mulish-Regular", size: 12))
                 .multilineTextAlignment(.center)
         }
         .frame(width: 72)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text(person.name))
     }
 }
 
@@ -82,23 +67,29 @@ struct AsyncRemoteImage: View {
 }
 
 // MARK: - Main View
+
+// Layout constants so we don’t accidentally change sizes
+private enum Layout {
+    static let heroHeight: CGFloat = 300
+    static let cardCorner: CGFloat = 25
+    static let cardOffsetY: CGFloat = -40
+}
+
 struct MovieDetailView: View {
     @StateObject var viewModel: MovieDetailViewModel
-
+    
     // Layout constants so we don’t accidentally change sizes
     private enum Layout {
         static let heroHeight: CGFloat = 300
         static let cardCorner: CGFloat = 25
         static let cardOffsetY: CGFloat = -40
-        static let sectionSpacing: CGFloat = 20
     }
-
+    
     var body: some View {
         
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 ZStack(alignment: .top) {
-                    // HERO
                     GeometryReader { geo in
                         AsyncImage(url: viewModel.detail?.base.bannerURL) { phase in
                             (phase.image ?? Image(uiImage: .init()))
@@ -109,42 +100,42 @@ struct MovieDetailView: View {
                         .clipped()
                     }
                     .frame(height: 300) // important: cap GeometryReader height
-
-                    // CARD (starts inside ZStack, heroH - overlap from the top)
-                    VStack(alignment: .leading, spacing: 20) {
+                    
+                    VStack(alignment: .leading) {
                         contentCard
-                        Spacer()
-
+                        // FIX: Am eliminat Spacer()-ul care împiedica scroll-ul corect
+                        // Spacer()
                     }
                     .background(Color(.systemBackground))
-                    .cornerRadius(25, corners: [.topLeft, .topRight])
-                    .shadow(radius: 5)
+                    .cornerRadius(10, corners: [.topLeft, .topRight])
                     .padding(.top, 300 - 40) // 👈 overlap without offset
                 }
             }
         }
-        // keep ignoring only the top safe area
-        .edgesIgnoringSafeArea(.top)
+        // Pastrează ignorarea safe area doar pentru top, dar ascunde Tab Bar-ul
+        .ignoresSafeArea(.all, edges: .top)
         .scrollBounceBehavior(.basedOnSize)
         .background(Color(.systemBackground))
         .overlay(loadingOverlay)              // loading/error on top, not altering layout
         .onAppear { viewModel.load() }
+        // FIX 2: Ascunde Tab Bar-ul pe acest ecran
+        .toolbar(.hidden, for: .tabBar) //
     }
-
+    
     // MARK: Hero header
     private var heroSection: some View {
         ZStack(alignment: .bottomLeading) {
-          GeometryReader { geo in
-              AsyncImage(url: viewModel.detail?.base.bannerURL) { phase in
-              (phase.image ?? Image(uiImage: .init()))
-                .resizable()
-                .scaledToFill()
+            GeometryReader { geo in
+                AsyncImage(url: viewModel.detail?.base.bannerURL) { phase in
+                    (phase.image ?? Image(uiImage: .init()))
+                        .resizable()
+                        .scaledToFill()
+                }
+                .frame(width: geo.size.width, height: 300) // 👈 pin width + height
+                .clipped()
             }
-            .frame(width: geo.size.width, height: 300) // 👈 pin width + height
-            .clipped()
-          }
-          .frame(height: 300)
-
+            .frame(height: 300)
+            
             // Subtle readability gradient (keeps same look)
             LinearGradient(
                 colors: [.clear, .black.opacity(0.25)],
@@ -152,7 +143,7 @@ struct MovieDetailView: View {
             )
             .frame(height: Layout.heroHeight)
             .allowsHitTesting(false)
-
+            
             // Back and Play keep same positions/appearance
             VStack {
                 HStack {
@@ -160,7 +151,7 @@ struct MovieDetailView: View {
                     Spacer()
                 }
                 Spacer()
-
+                
                 VStack(spacing: 0) {
                     Button(action: { /* Play trailer */ }) {
                         Image(systemName: "play.circle.fill")
@@ -182,7 +173,7 @@ struct MovieDetailView: View {
         }
         .frame(maxHeight: 400) // preserves your max cap
     }
-
+    
     // Small circle button with the same look as before
     private struct CircleIcon: View {
         let system: String
@@ -194,10 +185,10 @@ struct MovieDetailView: View {
                 .clipShape(Circle())
         }
     }
-
+    
     // MARK: Card content
     private var contentCard: some View {
-        VStack(alignment: .leading, spacing: Layout.sectionSpacing) {
+        VStack(alignment: .leading) {
             titleSection
             ratingSection
             tagsSection
@@ -205,47 +196,46 @@ struct MovieDetailView: View {
             descriptionSection
             castSection
         }
-        .padding(.all, 24)
-        .accessibilityElement(children: .contain)
+        .padding(.horizontal, 24)
+        .padding(.top, 24)
     }
-
+    
     private var titleSection: some View {
         HStack(alignment: .top) {
             Text(viewModel.detail?.base.title ?? "")
-                .font(.title).fontWeight(.bold)
-
+                .font(.custom("Mulish-Bold", size: 20))
+                .lineLimit(2)
             Spacer()
-
             Image(systemName: "bookmark")
                 .foregroundColor(.gray)
-                .font(.title2)
-                .accessibilityLabel(Text("Bookmark"))
         }
+        .padding(.bottom, 8)
     }
-
+    
     private var ratingSection: some View {
         Group {
             if let score = viewModel.detail?.base.score {
-                HStack(spacing: 4) {
+                HStack(spacing: 2) {
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
-                        .font(.subheadline)
                     Text("\(score, specifier: "%.1f")/10 IMDb")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.custom("Mulish-Regular", size: 12))
+                        .foregroundColor(.textSecondary)
                 }
+                .padding(.bottom, 16)
             }
         }
     }
-
+    
     private var tagsSection: some View {
-        HStack {
+        HStack(spacing: 8) {
             ForEach(viewModel.detail?.base.genres ?? [], id: \.self) { GenreTag(text: $0) }
         }
+        .padding(.bottom, 16)
     }
-
+    
     private var infoSection: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 50) {
             DetailItem(title: "Length",   value: formattedDuration(minutes: viewModel.detail?.base.duration))
             DetailItem(title: "Language", value: viewModel.detail?.country ?? "N/A")
             DetailItem(
@@ -261,37 +251,31 @@ struct MovieDetailView: View {
                 }()
             )
         }
-        .padding(.vertical, 10)
+        .padding(.bottom, 24)
     }
-
+    
     private var descriptionSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Description")
-                .font(.headline).fontWeight(.bold)
-            Text(viewModel.detail?.synopsis ?? "")
-                .font(.body).foregroundColor(.secondary)
-                .lineLimit(5)
+            SectionHeader("Description", isButtonVisible: false)
+            Text(cleanedSynopsis(viewModel.detail?.synopsis ?? ""))
+                .font(.custom("Mulish-Regular", size: 12))
+                .foregroundStyle(Color.textSecondary)
+            
         }
+        .padding(.bottom, 24)
     }
-
+    
     private var castSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Cast").font(.headline).fontWeight(.bold)
-                Spacer()
-                Button("See more") { /* open cast */ }
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-            }
-
+        VStack(alignment: .leading, spacing: 8) {
+            SectionHeader("Cast")
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 20) {
+                HStack(spacing: 13) {
                     ForEach(viewModel.detail?.cast ?? [], id: \.id) { CastMemberView(person: $0) }
                 }
             }
         }
     }
-
+    
     // MARK: Loading / error overlay (doesn’t change layout)
     private var loadingOverlay: some View {
         Group {
@@ -305,17 +289,43 @@ struct MovieDetailView: View {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.orange)
                         Text("Eroare: \(error)").font(.subheadline)
                     }
-                    .padding()
+                        .padding()
                 )
             }
         }
         .animation(.easeInOut(duration: 0.2), value: viewModel.isLoading || viewModel.error != nil)
     }
-
+    
     // MARK: Utils
     private func formattedDuration(minutes: Int?) -> String {
         guard let minutes = minutes, minutes > 0 else { return "N/A" }
         let h = minutes / 60, m = minutes % 60
         return "\(h)h \(m)m"
+    }
+    
+    private func cleanedSynopsis(_ synopsis: String?) -> String {
+        guard let synopsis = synopsis else { return "" }
+        let htmlStripped = synopsis.replacingOccurrences(
+            of: "<[^>]+>",
+            with: "",
+            options: .regularExpression,
+            range: nil
+        )
+        
+        let newlinesRemoved = htmlStripped.replacingOccurrences(
+            of: "\n",
+            with: " ",
+            options: .literal,
+            range: nil
+        )
+        
+        let multipleSpacesRemoved = newlinesRemoved.replacingOccurrences(
+            of: " +",
+            with: " ",
+            options: .regularExpression,
+            range: nil
+        )
+        
+        return multipleSpacesRemoved.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

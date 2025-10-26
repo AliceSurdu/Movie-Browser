@@ -6,40 +6,59 @@
 //
 
 import SwiftUI
-import Foundation
 
-// Presupunem că MovieAPIServiceType, DefaultGraphQLClient și GraphQLClient sunt definite
-// și că ai acces la ele.
+// Structură auxiliară pentru Tag-uri (pentru TabView)
+enum Tab {
+    case home, bookmark, profile
+}
 
-// AppRouter.swift (Cod Corectat)
+// NOTE: Presupunem că MovieAPIServiceType, DefaultGraphQLClient și GraphQLClient sunt definite
 
 struct AppRouter: View {
-    // 1. Declari stiva de navigare (path) ca @State.
-    // Tipul de date trebuie să fie explicit: Array de tipurile care pot fi navigate
     @State private var path: [Movie] = []
-    
-    // ... (restul variabilelor și init rămân la fel) ...
+    @State private var selectedTab: Tab = .home
+
     private var gql: GraphQLClient = DefaultGraphQLClient()
     private let movieAPI: MovieAPIServiceType
 
     init() {
-        self.gql = DefaultGraphQLClient()
-        self.movieAPI = MovieAPIService(gql: DefaultGraphQLClient())
+        let client = DefaultGraphQLClient()
+        self.gql = client
+        self.movieAPI = MovieAPIService(gql: client)
     }
 
     var body: some View {
-        // 2. NavigationStack folosește path-ul ca binding
-        NavigationStack(path: $path) {
-            // 3. Pasezi path-ul ca binding către HomeView
-            HomeView(viewModel: .init(api: movieAPI), path: $path)
-                .navigationDestination(for: Movie.self) { m in
-                    MovieDetailView(viewModel:
-                        .init(
-                            id: m.id,
-                            api: self.movieAPI
-                        )
-                    )
+        // TabView este View-ul rădăcină
+        TabView(selection: $selectedTab) {
+            
+            // PRIMUL TAB: Home (Încapsulat în NavigationStack)
+            NavigationStack(path: $path) {
+                // HomeView primește path-ul ca binding
+                HomeView(viewModel: .init(api: movieAPI), path: $path)
+                    .navigationDestination(for: Movie.self) { m in
+                        MovieDetailView(viewModel: .init(id: m.id, api: self.movieAPI))
+                    }
+            }
+            .tabItem { // Iconița pentru tab-ul Home
+                // Folosesc o iconiță care imită designul cerut (cu buline)
+                Image("movieRoll")
+            }
+            .tag(Tab.home)
+            
+            Text("")
+                .tabItem {
+                    Image(systemName: "ticket")
                 }
+                .tag(Tab.profile)
+
+            // AL DOILEA TAB: Bookmark (Placeholder)
+            Text("Saved Movies")
+                .tabItem {
+                    Image("saved")
+                }
+                .tag(Tab.bookmark)
+            
         }
+        .tint(.brand) // Culoarea activă a iconițelor
     }
 }
