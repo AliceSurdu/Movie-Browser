@@ -15,6 +15,9 @@
 		2803BBE42EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBDC2EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf */; };
 		2803BBE62EAAA523008ECBC8 /* Merriweather-BoldIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBD82EAAA523008ECBC8 /* Merriweather-BoldIt.ttf */; };
 		2803BBE72EAAA523008ECBC8 /* Merriweather-LightIt.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2803BBDA2EAAA523008ECBC8 /* Merriweather-LightIt.ttf */; };
+		2803BBEE2EAFCFF6008ECBC8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2803BBED2EAFCFF3008ECBC8 /* Extensions.swift */; };
+		2803BBF02EAFD2E7008ECBC8 /* MovieDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2803BBEF2EAFD2E3008ECBC8 /* MovieDTO.swift */; };
+		2803BBF22EAFD313008ECBC8 /* MovieMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2803BBF12EAFD310008ECBC8 /* MovieMapper.swift */; };
 		28A9C89C2EA3A97800BC8492 /* AppEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C89B2EA3A97800BC8492 /* AppEntry.swift */; };
 		28A9C89E2EA3A97800BC8492 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C89D2EA3A97800BC8492 /* HomeView.swift */; };
 		28A9C8C12EA3AF7800BC8492 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A9C8C02EA3AF7500BC8492 /* Fonts.swift */; };
@@ -66,6 +69,9 @@
 		2803BBDB2EAAA523008ECBC8 /* Merriweather-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-Regular.ttf"; sourceTree = "<group>"; };
 		2803BBDC2EAAA523008ECBC8 /* Merriweather-UltraBdIt.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Merriweather-UltraBdIt.ttf"; sourceTree = "<group>"; };
 		2803BBE92EAAA5E5008ECBC8 /* Movie-Browser-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Movie-Browser-Info.plist"; sourceTree = "<group>"; };
+		2803BBED2EAFCFF3008ECBC8 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		2803BBEF2EAFD2E3008ECBC8 /* MovieDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDTO.swift; sourceTree = "<group>"; };
+		2803BBF12EAFD310008ECBC8 /* MovieMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieMapper.swift; sourceTree = "<group>"; };
 		28A9C8982EA3A97800BC8492 /* Movie Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Movie Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28A9C89B2EA3A97800BC8492 /* AppEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntry.swift; sourceTree = "<group>"; };
 		28A9C89D2EA3A97800BC8492 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -185,6 +191,7 @@
 		28A9C8A92EA3AD1800BC8492 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				2803BBED2EAFCFF3008ECBC8 /* Extensions.swift */,
 				28A9C8C92EA3AFEE00BC8492 /* MovieDetailsScene */,
 				28A9C8C62EA3AFC000BC8492 /* HomeScene */,
 			);
@@ -207,6 +214,8 @@
 				28A9C8B22EA3AE9500BC8492 /* Responses */,
 				28A9C8B12EA3AE8D00BC8492 /* Requests */,
 				28A9C8B02EA3AE7A00BC8492 /* MovieAPIService.swift */,
+				2803BBF12EAFD310008ECBC8 /* MovieMapper.swift */,
+				2803BBEF2EAFD2E3008ECBC8 /* MovieDTO.swift */,
 				28A9C8AF2EA3AE6E00BC8492 /* MovieAPIServiceType.swift */,
 			);
 			path = MoviesAPIs;
@@ -390,8 +399,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2803BBEE2EAFCFF6008ECBC8 /* Extensions.swift in Sources */,
 				28A9C8C12EA3AF7800BC8492 /* Fonts.swift in Sources */,
 				28E009352EA3B77600C4C5A7 /* GetMovieDetailInput.swift in Sources */,
+				2803BBF22EAFD313008ECBC8 /* MovieMapper.swift in Sources */,
 				28E009342EA3B77100C4C5A7 /* MoviesListOutput.swift in Sources */,
 				28E009392EA3B78F00C4C5A7 /* MovieAPIServiceType.swift in Sources */,
 				28E0093C2EA3B7A000C4C5A7 /* GraphQLClient.swift in Sources */,
@@ -405,6 +416,7 @@
 				28A9C8CB2EA3B00C00BC8492 /* MovieDetailView.swift in Sources */,
 				28A9C89C2EA3A97800BC8492 /* AppEntry.swift in Sources */,
 				28A9C8CF2EA3B4F200BC8492 /* AppRouter.swift in Sources */,
+				2803BBF02EAFD2E7008ECBC8 /* MovieDTO.swift in Sources */,
 				28E0093D2EA3B7B000C4C5A7 /* MovieDetail.swift in Sources */,
 				28E009382EA3B78500C4C5A7 /* MovieAPIService.swift in Sources */,
 				28E009362EA3B77B00C4C5A7 /* GetPopularInput.swift in Sources */,

@@ -7,16 +7,33 @@
 
 import SwiftUI
 
+/// Enum to define the main tabs of the application.
 enum Tab {
-    case home, bookmark, profile
+    case home       // The main movie browsing tab
+    case bookmark   // The saved/bookmarked movies tab
+    case profile    // The user profile or tickets tab
 }
 
+/// The root view of the application.
+/// `AppRouter` is responsible for setting up the main `TabView` and the
+/// primary `NavigationStack` for the "Home" flow.
 struct AppRouter: View {
+    
+    /// The navigation path for the "Home" tab, holding the stack of movies.
     @State private var path: [Movie] = []
+    
+    /// The currently selected tab.
     @State private var selectedTab: Tab = .home
     
+    // MARK: - Dependencies
+    
+    /// The shared GraphQL client instance.
     private var gql: GraphQLClient = DefaultGraphQLClient()
+    
+    /// The API service responsible for fetching movie data.
     private let movieAPI: MovieAPIServiceType
+    
+    // MARK: - Initializer
     
     init() {
         let client = DefaultGraphQLClient()
@@ -24,31 +41,32 @@ struct AppRouter: View {
         self.movieAPI = MovieAPIService(gql: client)
     }
     
+    // MARK: - Body
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $path) {
                 HomeView(viewModel: .init(api: movieAPI), path: $path)
-                    .navigationDestination(for: Movie.self) { m in
-                        MovieDetailView(viewModel: .init(id: m.id, api: self.movieAPI))
+                    .navigationDestination(for: Movie.self) { movie in
+                        MovieDetailView(viewModel: .init(id: movie.id, api: self.movieAPI))
                     }
             }
             .tabItem {
-                Image(systemName: "movieclapper")
+                Image(systemName: "popcorn")
             }
             .tag(Tab.home)
             
-            Text("")
+            Text("Tickets View (Placeholder)")
                 .tabItem {
                     Image(systemName: "ticket")
                 }
                 .tag(Tab.profile)
             
-            Text("Saved Movies")
+            Text("Saved Movies View (Placeholder)")
                 .tabItem {
                     Image(systemName: "bookmark")
                 }
                 .tag(Tab.bookmark)
-            
         }
         .tint(.brand)
     }

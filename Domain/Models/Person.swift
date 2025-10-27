@@ -7,8 +7,14 @@
 
 import Foundation
 
+/// Represents a single cast or crew member.
 struct Person: Identifiable, Hashable {
-  let id: Int
-  let name: String
-  let imageURL: URL?
+    /// The unique identifier for the person.
+    let id: Int
+    
+    /// The person's full name.
+    let name: String
+    
+    /// The URL for the person's profile image.
+    let imageURL: URL?
 }

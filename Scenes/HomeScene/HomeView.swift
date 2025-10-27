@@ -1,204 +1,105 @@
+//
+//  HomeView.swift
+//  Movie Browser
+//
+//  Created by Alice Surdu on 18.10.2025.
+//
 import SwiftUI
 
-// MARK: - Componente Auxiliare
-
-/// 2. Card pentru secțiunea "Now Showing" (Orizontal)
-struct NowShowingCard: View {
-    let movie: Movie
-    // Closure pentru a gestiona acțiunea de navigare
-    var onTap: () -> Void
-    
-    // Înălțimea și lățimea fixă pentru card
-    private let cardWidth: CGFloat = 140
-    private let cardHeight: CGFloat = 212
-    private let cardRadius: CGFloat = 5
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            // Poster (AsyncImage)
-            AsyncImage(url: movie.posterURL) { result in
-                if let result = result.image {
-                    result
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Color.gray.opacity(0.2)
-                    // Asigurăm că placeholder-ul are aceleași dimensiuni
-                        .frame(width: cardWidth, height: cardHeight)
-                }
-            }
-            .frame(width: cardWidth, height: cardHeight)    // 👈 fixed size
-            .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
-            .clipped()
-            .shadow(color: .black.opacity(0.08), radius: 6, y: Spacing.xs)
-            
-            // Titlu
-            Text(movie.title)
-                .font(.custom("Mulish-Bold", size: Spacing.mdPlus))
-                .lineLimit(2)
-                .truncationMode(.tail)
-            
-            // Rating IMDb
-            if let score = movie.score {
-                HStack(spacing: Spacing.xs) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                        .font(.caption)
-                    Text("\(score, specifier: "%.1f")/10 IMDb")
-                        .font(.custom("Mulish-Regular", size: Spacing.md))
-                        .foregroundColor(Color.textSecondary)
-                }
-            }
-        }
-        // Setăm lățimea fixă a întregului card
-        .frame(width: cardWidth)
-        .onTapGesture(perform: onTap)
-    }
-}
-
-/// 3. Card pentru secțiunea "Popular" (Vertical)
-struct PopularCard: View {
-    let movie: Movie
-    // Closure pentru a gestiona acțiunea de navigare
-    var onTap: () -> Void
-    
-    private func formattedDuration(minutes: Int?) -> String {
-        guard let minutes = minutes, minutes > 0 else { return "N/A" }
-        let hours = minutes / 60
-        let remainingMinutes = minutes % 60
-        return "\(hours)h \(remainingMinutes)min"
-    }
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: Spacing.lg) {
-            AsyncImage(url: movie.posterURL) { phase in
-                if let image = phase.image {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else {
-                    Color.gray.opacity(0.2)
-                }
-            }
-            .frame(width: 80, height: 120)
-            .cornerRadius(5)
-            .clipped()
-            
-            VStack(alignment: .leading, spacing: Spacing.sm) {
-                Text(movie.title)
-                    .font(.custom("Mulish-Bold", size: Spacing.mdPlus))
-                    .lineLimit(3)
-                
-                // Rating IMDb
-                if let score = movie.score {
-                    HStack(spacing: Spacing.xs) {
-                        Image(systemName: "star.fill")
-                            .foregroundColor(.yellow)
-                        Text("\(score, specifier: "%.1f")/10 IMDb")
-                            .font(.custom("Mulish-Regular", size: Spacing.md))
-                            .foregroundColor(Color.textSecondary)
-                    }
-                }
-                
-                // Genuri
-                HStack {
-                    ForEach(movie.genres.prefix(3), id: \.self) { genre in
-                        GenreTag(text: genre)
-                    }
-                }
-                
-                // Durată
-                HStack(spacing: Spacing.xs) {
-                    Image(systemName: "clock")
-                        .foregroundColor(.black)
-                    Text(formattedDuration(minutes: movie.duration))
-                        .font(.custom("Mulish-Regular", size: Spacing.md))
-                        .foregroundColor(.black)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .onTapGesture(perform: onTap) // Acțiunea de navigare la tap
-    }
-}
-
-
-// MARK: - View Principală
-
+/// The main view for the "Home" tab, displaying lists of movies.
 struct HomeView: View {
+    
+    // MARK: - State
+    
+    /// The ViewModel managing the state for this view.
     @StateObject var viewModel: HomeViewModel
+    
+    /// A binding to the `NavigationStack` path from `AppRouter` to allow navigation.
     @Binding var path: [Movie]
+    
+    // MARK: - Body
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.xxl) {
-                VStack(alignment: .leading, spacing: Spacing.lg) {
-                    SectionHeader("Now Showing")
-                        .padding(.horizontal, Spacing.xxl)
-                    
-                    if viewModel.isLoading && viewModel.nowShowing.isEmpty {
-                        ProgressView().padding(.horizontal)
-                    } else if !viewModel.nowShowing.isEmpty {
-                        // Listă Orizontală de filme
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: Spacing.lg) {
-                                ForEach(viewModel.nowShowing, id: \.id) { movie in
-                                    NowShowingCard(movie: movie) { path.append(movie) }
-                                }
-                            }
-                            .padding(.leading, Spacing.xxl)
-                        }
-                    } else if let error = viewModel.error {
-                        Text("Eroare la încărcare: \(error)").padding(.horizontal)
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: Spacing.lg) {
-                    SectionHeader("Popular")
-                    
-                    if viewModel.isLoading && viewModel.popular.isEmpty {
-                        ProgressView().padding(.horizontal)
-                    } else if !viewModel.popular.isEmpty {
-                        VStack(spacing: Spacing.lg) {
-                            ForEach(viewModel.popular, id: \.id) { movie in
-                                PopularCard(movie: movie) { path.append(movie) }
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, Spacing.xxl)
+                nowShowingSection
+                popularSection
             }
-            .padding(.top, Spacing.lg)
+            .padding(.top, Spacing.xxl)
         }
         .onAppear {
+            // Load data when the view first appears
             viewModel.load()
         }
         .background(Color(.systemBackground))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            
-            // MARK: - Titlul Personalizat (Înlocuiește .navigationTitle)
+            // Custom Navigation Bar title
             ToolbarItem(placement: .principal) {
                 Text("FilmKu")
                     .font(.custom("Merriweather UltraBold", size: Spacing.lg))
                     .foregroundColor(Color.brand)
             }
             
-            // MARK: - Iconițe pe Stânga (Leading)
+            // Custom left bar button
             ToolbarItem(placement: .topBarLeading) {
-                // Grupăm în HStack pentru controlul spațierii și a două iconițe
-                HStack(spacing: Spacing.lg) {
-                    Image("Union") // Meniu
-                }
+                Image("Union") // Custom menu icon
             }
             
-            // MARK: - Iconițe pe Dreapta (Trailing)
+            // Custom right bar button
             ToolbarItem(placement: .topBarTrailing) {
-                // Grupăm în HStack pentru controlul spațierii și a două iconițe
-                HStack(spacing: Spacing.lg) {
-                    Image("Notif") // Notificări
+                Image("Notif") // Custom notification icon
+            }
+        }
+    }
+    
+    // MARK: - Private Subviews
+    
+    /// The "Now Showing" horizontal scrolling list.
+    private var nowShowingSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            SectionHeader("Now Showing")
+                .padding(.horizontal, Spacing.xxl)
+            
+            // Check loading/error/success states
+            if viewModel.isLoading && viewModel.nowShowing.isEmpty {
+                ProgressView().padding(.horizontal)
+            } else if !viewModel.nowShowing.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.lg) {
+                        ForEach(viewModel.nowShowing, id: \.id) { movie in
+                            NowShowingCard(movie: movie) {
+                                // Push the selected movie onto the navigation stack
+                                path.append(movie)
+                            }
+                        }
+                    }
+                    .padding(.leading, Spacing.xxl)
+                }
+            } else if let error = viewModel.error {
+                Text("Failed to load movies: \(error)").padding(.horizontal)
+            }
+        }
+    }
+    
+    /// The "Popular" vertical list.
+    private var popularSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            SectionHeader("Popular")
+            
+            if viewModel.isLoading && viewModel.popular.isEmpty {
+                ProgressView()
+            } else if !viewModel.popular.isEmpty {
+                VStack(spacing: Spacing.lg) {
+                    ForEach(viewModel.popular, id: \.id) { movie in
+                        PopularCard(movie: movie) {
+                            // Push the selected movie onto the navigation stack
+                            path.append(movie)
+                        }
+                    }
                 }
             }
         }
+        .padding(.horizontal, Spacing.xxl)
     }
 }

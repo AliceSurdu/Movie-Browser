@@ -1,192 +1,111 @@
+//
+//  MovieDetailViewModel.swift
+//  Movie Browser
+//
+//  Created by Alice Surdu on 18.10.2025.
+//
+
 import SwiftUI
 
-// MARK: - Corner helper (kept)
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect,
-            byRoundingCorners: corners,
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
-    }
-}
-
-// MARK: - Small UI atoms (kept look)
-
-struct DetailItem: View {
-    let title: String
-    let value: String
-    var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text(title).font(.custom("Mulish-Regular", size: Spacing.md)).foregroundStyle(Color(.textSecondary))
-            Text(value).font(.custom("Mulish-SemiBold", size: Spacing.md)).foregroundStyle(Color(.black))
-        }
-    }
-}
-
-struct CastMemberView: View {
-    let person: Person
-    var body: some View {
-        VStack(spacing: Spacing.xs) {
-            AsyncRemoteImage(url: person.imageURL)
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-            Text(person.name)
-                .font(.custom("Mulish-Regular", size: Spacing.md))
-                .multilineTextAlignment(.center)
-        }
-        .frame(width: 72)
-    }
-}
-
-// Async image with graceful fallbacks (same visuals)
-struct AsyncRemoteImage: View {
-    let url: URL?
-    var body: some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-                image.resizable().scaledToFill()
-            case .failure(_):
-                Color.gray.opacity(0.2)
-            case .empty:
-                Color.gray.opacity(0.1)
-            @unknown default:
-                Color.gray.opacity(0.2)
-            }
-        }
-    }
-}
-
-// MARK: - Main View
-
-// Layout constants so we don’t accidentally change sizes
-private enum Layout {
-    static let heroHeight: CGFloat = 300
-    static let cardCorner: CGFloat = 25
-    static let cardOffsetY: CGFloat = -40
-}
-
+/// Displays the full details for a single movie.
 struct MovieDetailView: View {
     @StateObject var viewModel: MovieDetailViewModel
+    @Environment(\.dismiss) private var dismiss
     
-    // Layout constants so we don’t accidentally change sizes
+    // MARK: - Layout Constants
+    
     private enum Layout {
         static let heroHeight: CGFloat = 300
-        static let cardCorner: CGFloat = 25
-        static let cardOffsetY: CGFloat = -40
+        static let cardOverlap: CGFloat = 40
     }
+    
+    // MARK: - Body
     
     var body: some View {
         
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 ZStack(alignment: .top) {
-                    GeometryReader { geo in
-                        AsyncImage(url: viewModel.detail?.base.bannerURL) { phase in
-                            (phase.image ?? Image(uiImage: .init()))
-                                .resizable()
-                                .scaledToFill()
-                        }
-                        .frame(width: geo.size.width, height: 300)
-                        .clipped()
-                    }
-                    .frame(height: 300) // important: cap GeometryReader height
-                    
+                    heroSection
+                        .frame(height: Layout.heroHeight)
                     VStack(alignment: .leading) {
                         contentCard
-                        // FIX: Am eliminat Spacer()-ul care împiedica scroll-ul corect
-                        // Spacer()
                     }
                     .background(Color(.systemBackground))
                     .cornerRadius(10, corners: [.topLeft, .topRight])
-                    .padding(.top, 300 - 40) // 👈 overlap without offset
+                    .padding(.top, Layout.heroHeight - Layout.cardOverlap)
                 }
             }
         }
-        // Pastrează ignorarea safe area doar pentru top, dar ascunde Tab Bar-ul
         .ignoresSafeArea(.all, edges: .top)
         .scrollBounceBehavior(.basedOnSize)
         .background(Color(.systemBackground))
-        .overlay(loadingOverlay)              // loading/error on top, not altering layout
-        .onAppear { viewModel.load() }
-        // FIX 2: Ascunde Tab Bar-ul pe acest ecran
-        .toolbar(.hidden, for: .tabBar) //
+        .overlay(loadingOverlay)
+        .onAppear {
+            viewModel.load()
+        }
+        .toolbar(.hidden, for: .tabBar)
+        .navigationBarBackButtonHidden(true)
     }
     
-    // MARK: Hero header
+    // MARK: - Private Subviews
+    
+    /// The top hero banner section with image and overlay buttons.
     private var heroSection: some View {
-        ZStack(alignment: .bottomLeading) {
+        ZStack(alignment: .top) {
             GeometryReader { geo in
-                AsyncImage(url: viewModel.detail?.base.bannerURL) { phase in
-                    (phase.image ?? Image(uiImage: .init()))
-                        .resizable()
-                        .scaledToFill()
-                }
-                .frame(width: geo.size.width, height: 300) // 👈 pin width + height
-                .clipped()
+                AsyncRemoteImage(url: viewModel.detail?.base.bannerURL)
+                    .frame(width: geo.size.width, height: Layout.heroHeight)
+                    .clipped()
             }
-            .frame(height: 300)
-            
-            // Subtle readability gradient (keeps same look)
-            LinearGradient(
-                colors: [.clear, .black.opacity(0.25)],
-                startPoint: .center, endPoint: .bottom
-            )
             .frame(height: Layout.heroHeight)
-            .allowsHitTesting(false)
             
-            // Back and Play keep same positions/appearance
-            VStack {
-                HStack {
-                    CircleIcon(system: "arrow.left")
-                    Spacer()
+            HStack(alignment: .center) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "arrow.left")
+                        .foregroundColor(.white)
                 }
                 Spacer()
                 
-                VStack(spacing: 0) {
-                    Button(action: { /* Play trailer */ }) {
-                        Image(systemName: "play.circle.fill")
-                            .resizable()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.white)
-                            .shadow(radius: 5)
-                    }
-                    Text("Play Trailer")
-                        .font(.caption)
+                Button(action: {}) {
+                    Image(systemName: "ellipsis")
                         .foregroundColor(.white)
-                        .padding(.top, Spacing.sm)
                 }
-                .padding(.bottom, 10)
-                .offset(y: -50) // keep your exact visual offset
             }
-            .padding(.top, 50)
-            .padding(.horizontal)
+            .padding(.horizontal, Spacing.xxl)
+            .padding(.top, 62)
+            
         }
-        .frame(maxHeight: 400) // preserves your max cap
+        .overlay(alignment: .center) {
+            VStack(spacing: Spacing.sm) {
+                Button(action: { /* Play trailer */ }) {
+                    Image(systemName: "play.circle.fill")
+                        .resizable()
+                        .frame(width: 45, height: 45)
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                }
+                Text("Play Trailer")
+                    .font(.caption)
+                    .foregroundColor(.white)
+            }
+        }
+        .frame(maxHeight: 400)
     }
     
-    // Small circle button with the same look as before
+    /// A small circular icon button with a semi-transparent background.
     private struct CircleIcon: View {
         let system: String
         var body: some View {
-            Image(systemName: system)
+            Image("Back")
                 .foregroundColor(.white)
                 .padding(10)
-                .background(Color.black.opacity(0.3))
-                .clipShape(Circle())
         }
     }
     
-    // MARK: Card content
+    /// The main content card holding all movie details.
     private var contentCard: some View {
         VStack(alignment: .leading) {
             titleSection
@@ -198,11 +117,14 @@ struct MovieDetailView: View {
         }
         .padding(.horizontal, Spacing.xxl)
         .padding(.top, Spacing.xxl)
+        .padding(.bottom, 70)
     }
+    
+    // MARK: - Content Sections
     
     private var titleSection: some View {
         HStack(alignment: .top) {
-            Text(viewModel.detail?.base.title ?? "")
+            Text(viewModel.detail?.base.title ?? "Loading...")
                 .font(.custom("Mulish-Bold", size: 20))
                 .lineLimit(2)
             Spacer()
@@ -229,7 +151,9 @@ struct MovieDetailView: View {
     
     private var tagsSection: some View {
         HStack(spacing: Spacing.sm) {
-            ForEach(viewModel.detail?.base.genres ?? [], id: \.self) { GenreTag(text: $0) }
+            ForEach(viewModel.detail?.base.genres ?? [], id: \.self) {
+                GenreTag(text: $0)
+            }
         }
         .padding(.bottom, Spacing.lg)
     }
@@ -260,7 +184,7 @@ struct MovieDetailView: View {
             Text(cleanedSynopsis(viewModel.detail?.synopsis ?? ""))
                 .font(.custom("Mulish-Regular", size: Spacing.md))
                 .foregroundStyle(Color.textSecondary)
-            
+                .lineLimit(nil)
         }
         .padding(.bottom, Spacing.xxl)
     }
@@ -276,7 +200,9 @@ struct MovieDetailView: View {
         }
     }
     
-    // MARK: Loading / error overlay (doesn’t change layout)
+    // MARK: - Loading / Error Overlay
+    
+    /// An overlay that displays a loading indicator or an error message.
     private var loadingOverlay: some View {
         Group {
             if viewModel.isLoading {
@@ -287,24 +213,31 @@ struct MovieDetailView: View {
                 Color.clear.overlay(
                     VStack(spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.orange)
-                        Text("Eroare: \(error)").font(.subheadline)
+                        Text("Error: \(error)").font(.subheadline)
                     }
                         .padding()
                 )
             }
         }
+        // Animate the appearance/disappearance of the overlay
         .animation(.easeInOut(duration: 0.2), value: viewModel.isLoading || viewModel.error != nil)
     }
     
-    // MARK: Utils
+    // MARK: - Utils
+    
+    /// Formats a duration in minutes (e.g., 148) into "Xh Ym" (e.g., "2h 28m").
     private func formattedDuration(minutes: Int?) -> String {
         guard let minutes = minutes, minutes > 0 else { return "N/A" }
-        let h = minutes / 60, m = minutes % 60
+        let h = minutes / 60
+        let m = minutes % 60
         return "\(h)h \(m)m"
     }
     
+    /// Cleans a synopsis string by removing HTML tags and extra whitespace.
     private func cleanedSynopsis(_ synopsis: String?) -> String {
         guard let synopsis = synopsis else { return "" }
+        
+        // 1. Strip HTML tags like <br>, <i>
         let htmlStripped = synopsis.replacingOccurrences(
             of: "<[^>]+>",
             with: "",
@@ -312,6 +245,7 @@ struct MovieDetailView: View {
             range: nil
         )
         
+        // 2. Replace newlines with a space
         let newlinesRemoved = htmlStripped.replacingOccurrences(
             of: "\n",
             with: " ",
@@ -319,6 +253,7 @@ struct MovieDetailView: View {
             range: nil
         )
         
+        // 3. Condense multiple spaces into one
         let multipleSpacesRemoved = newlinesRemoved.replacingOccurrences(
             of: " +",
             with: " ",
@@ -326,6 +261,7 @@ struct MovieDetailView: View {
             range: nil
         )
         
+        // 4. Trim leading/trailing whitespace
         return multipleSpacesRemoved.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
