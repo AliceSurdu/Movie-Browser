@@ -25,9 +25,9 @@ struct DetailItem: View {
     let title: String
     let value: String
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.custom("Mulish-Regular", size: 12)).foregroundStyle(Color(.textSecondary))
-            Text(value).font(.custom("Mulish-SemiBold", size: 12)).foregroundStyle(Color(.black))
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(title).font(.custom("Mulish-Regular", size: Spacing.md)).foregroundStyle(Color(.textSecondary))
+            Text(value).font(.custom("Mulish-SemiBold", size: Spacing.md)).foregroundStyle(Color(.black))
         }
     }
 }
@@ -35,12 +35,12 @@ struct DetailItem: View {
 struct CastMemberView: View {
     let person: Person
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: Spacing.xs) {
             AsyncRemoteImage(url: person.imageURL)
                 .frame(width: 72, height: 72)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
             Text(person.name)
-                .font(.custom("Mulish-Regular", size: 12))
+                .font(.custom("Mulish-Regular", size: Spacing.md))
                 .multilineTextAlignment(.center)
         }
         .frame(width: 72)
@@ -163,7 +163,7 @@ struct MovieDetailView: View {
                     Text("Play Trailer")
                         .font(.caption)
                         .foregroundColor(.white)
-                        .padding(.top, 8)
+                        .padding(.top, Spacing.sm)
                 }
                 .padding(.bottom, 10)
                 .offset(y: -50) // keep your exact visual offset
@@ -196,8 +196,8 @@ struct MovieDetailView: View {
             descriptionSection
             castSection
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 24)
+        .padding(.horizontal, Spacing.xxl)
+        .padding(.top, Spacing.xxl)
     }
     
     private var titleSection: some View {
@@ -209,7 +209,7 @@ struct MovieDetailView: View {
             Image(systemName: "bookmark")
                 .foregroundColor(.gray)
         }
-        .padding(.bottom, 8)
+        .padding(.bottom, Spacing.sm)
     }
     
     private var ratingSection: some View {
@@ -219,19 +219,19 @@ struct MovieDetailView: View {
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
                     Text("\(score, specifier: "%.1f")/10 IMDb")
-                        .font(.custom("Mulish-Regular", size: 12))
+                        .font(.custom("Mulish-Regular", size: Spacing.md))
                         .foregroundColor(.textSecondary)
                 }
-                .padding(.bottom, 16)
+                .padding(.bottom, Spacing.lg)
             }
         }
     }
     
     private var tagsSection: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Spacing.sm) {
             ForEach(viewModel.detail?.base.genres ?? [], id: \.self) { GenreTag(text: $0) }
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, Spacing.lg)
     }
     
     private var infoSection: some View {
@@ -251,22 +251,22 @@ struct MovieDetailView: View {
                 }()
             )
         }
-        .padding(.bottom, 24)
+        .padding(.bottom, Spacing.xxl)
     }
     
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             SectionHeader("Description", isButtonVisible: false)
             Text(cleanedSynopsis(viewModel.detail?.synopsis ?? ""))
-                .font(.custom("Mulish-Regular", size: 12))
+                .font(.custom("Mulish-Regular", size: Spacing.md))
                 .foregroundStyle(Color.textSecondary)
             
         }
-        .padding(.bottom, 24)
+        .padding(.bottom, Spacing.xxl)
     }
     
     private var castSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             SectionHeader("Cast")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 13) {

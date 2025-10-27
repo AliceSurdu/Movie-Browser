@@ -7,9 +7,9 @@
 
 import SwiftUI
 enum Fonts {
-    static let h1 = Font.custom("Merriweather-Bold", size: 16)     // titluri secțiuni
-    static let h2 = Font.system(size: 20, weight: .semibold)  // titlu film
-    static let body = Font.system(size: 16, weight: .regular)
-    static let sub  = Font.system(size: 14, weight: .regular)
-    static let cap  = Font.system(size: 12, weight: .medium)
+    static let h1 = Font.custom("Merriweather-Bold", size: Spacing.lg)
+    static let h2 = Font.system(size: Spacing.xl, weight: .semibold)
+    static let body = Font.system(size: Spacing.lg, weight: .regular)
+    static let sub  = Font.system(size: Spacing.mdPlus, weight: .regular)
+    static let cap  = Font.system(size: Spacing.md, weight: .medium)
 }

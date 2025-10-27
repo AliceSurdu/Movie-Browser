@@ -14,7 +14,7 @@ struct NowShowingCard: View {
     private let cardRadius: CGFloat = 5
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             // Poster (AsyncImage)
             AsyncImage(url: movie.posterURL) { result in
                 if let result = result.image {
@@ -30,22 +30,22 @@ struct NowShowingCard: View {
             .frame(width: cardWidth, height: cardHeight)    // 👈 fixed size
             .clipShape(RoundedRectangle(cornerRadius: cardRadius, style: .continuous))
             .clipped()
-            .shadow(color: .black.opacity(0.08), radius: 6, y: 4)
+            .shadow(color: .black.opacity(0.08), radius: 6, y: Spacing.xs)
             
             // Titlu
             Text(movie.title)
-                .font(.custom("Mulish-Bold", size: 14))
+                .font(.custom("Mulish-Bold", size: Spacing.mdPlus))
                 .lineLimit(2)
                 .truncationMode(.tail)
             
             // Rating IMDb
             if let score = movie.score {
-                HStack(spacing: 4) {
+                HStack(spacing: Spacing.xs) {
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
                         .font(.caption)
                     Text("\(score, specifier: "%.1f")/10 IMDb")
-                        .font(.custom("Mulish-Regular", size: 12))
+                        .font(.custom("Mulish-Regular", size: Spacing.md))
                         .foregroundColor(Color.textSecondary)
                 }
             }
@@ -70,7 +70,7 @@ struct PopularCard: View {
     }
     
     var body: some View {
-        HStack(alignment: .top, spacing: 16) {
+        HStack(alignment: .top, spacing: Spacing.lg) {
             AsyncImage(url: movie.posterURL) { phase in
                 if let image = phase.image {
                     image
@@ -84,18 +84,18 @@ struct PopularCard: View {
             .cornerRadius(5)
             .clipped()
             
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text(movie.title)
-                    .font(.custom("Mulish-Bold", size: 14))
+                    .font(.custom("Mulish-Bold", size: Spacing.mdPlus))
                     .lineLimit(3)
                 
                 // Rating IMDb
                 if let score = movie.score {
-                    HStack(spacing: 4) {
+                    HStack(spacing: Spacing.xs) {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
                         Text("\(score, specifier: "%.1f")/10 IMDb")
-                            .font(.custom("Mulish-Regular", size: 12))
+                            .font(.custom("Mulish-Regular", size: Spacing.md))
                             .foregroundColor(Color.textSecondary)
                     }
                 }
@@ -108,11 +108,11 @@ struct PopularCard: View {
                 }
                 
                 // Durată
-                HStack(spacing: 4) {
+                HStack(spacing: Spacing.xs) {
                     Image(systemName: "clock")
                         .foregroundColor(.black)
                     Text(formattedDuration(minutes: movie.duration))
-                        .font(.custom("Mulish-Regular", size: 12))
+                        .font(.custom("Mulish-Regular", size: Spacing.md))
                         .foregroundColor(.black)
                 }
             }
@@ -131,46 +131,44 @@ struct HomeView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: Spacing.xxl) {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
                     SectionHeader("Now Showing")
-                        .padding(.horizontal, 24)
+                        .padding(.horizontal, Spacing.xxl)
                     
                     if viewModel.isLoading && viewModel.nowShowing.isEmpty {
                         ProgressView().padding(.horizontal)
                     } else if !viewModel.nowShowing.isEmpty {
                         // Listă Orizontală de filme
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
+                            HStack(spacing: Spacing.lg) {
                                 ForEach(viewModel.nowShowing, id: \.id) { movie in
                                     NowShowingCard(movie: movie) { path.append(movie) }
                                 }
                             }
-                            .padding(.leading, 24)
+                            .padding(.leading, Spacing.xxl)
                         }
                     } else if let error = viewModel.error {
                         Text("Eroare la încărcare: \(error)").padding(.horizontal)
                     }
                 }
                 
-                // 3. Secțiunea "Popular"
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: Spacing.lg) {
                     SectionHeader("Popular")
                     
                     if viewModel.isLoading && viewModel.popular.isEmpty {
                         ProgressView().padding(.horizontal)
                     } else if !viewModel.popular.isEmpty {
-                        // Listă Verticală de filme
-                        VStack(spacing: 16) {
+                        VStack(spacing: Spacing.lg) {
                             ForEach(viewModel.popular, id: \.id) { movie in
                                 PopularCard(movie: movie) { path.append(movie) }
                             }
                         }
                     }
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, Spacing.xxl)
             }
-            .padding(.top, 16)
+            .padding(.top, Spacing.lg)
         }
         .onAppear {
             viewModel.load()
@@ -182,14 +180,14 @@ struct HomeView: View {
             // MARK: - Titlul Personalizat (Înlocuiește .navigationTitle)
             ToolbarItem(placement: .principal) {
                 Text("FilmKu")
-                    .font(.custom("Merriweather UltraBold", size: 16))
+                    .font(.custom("Merriweather UltraBold", size: Spacing.lg))
                     .foregroundColor(Color.brand)
             }
             
             // MARK: - Iconițe pe Stânga (Leading)
             ToolbarItem(placement: .topBarLeading) {
                 // Grupăm în HStack pentru controlul spațierii și a două iconițe
-                HStack(spacing: 16) {
+                HStack(spacing: Spacing.lg) {
                     Image("Union") // Meniu
                 }
             }
@@ -197,7 +195,7 @@ struct HomeView: View {
             // MARK: - Iconițe pe Dreapta (Trailing)
             ToolbarItem(placement: .topBarTrailing) {
                 // Grupăm în HStack pentru controlul spațierii și a două iconițe
-                HStack(spacing: 16) {
+                HStack(spacing: Spacing.lg) {
                     Image("Notif") // Notificări
                 }
             }
