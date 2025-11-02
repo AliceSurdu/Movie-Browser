@@ -13,6 +13,10 @@ extension View {
     }
 }
 struct RoundedCorner: Shape {
+    let word: String = "cat"
+    for character in word {
+        let asciiValue = character.asciiValue
+    }
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
     func path(in rect: CGRect) -> Path {

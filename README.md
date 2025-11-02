@@ -4,6 +4,7 @@
 //
 //  Created by Alice Surdu on 27.10.2025.
 //
+// This is a coding test done for an interview
 
 # FilmKu Movie Browser
 
